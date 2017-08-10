@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 
 type Props = {
   children: any,
+  className: string,
   offset: number
 };
 
@@ -32,7 +33,7 @@ export class PositionFixer extends Component {
 
   recalculate() {
     const { offset } = this.props
-    const { reference, contents } = this.refs
+    const { reference, contents, container } = this.refs
     const referenceRect = reference.getBoundingClientRect()
 
     // Setting decimal pixels produces small imperfections in the UI
@@ -42,16 +43,19 @@ export class PositionFixer extends Component {
     contents.style.width = `${Math.round(referenceRect.width)}px`
 
     if (referenceRect.top < offset) {
+      container.style.height = `${contents.getBoundingClientRect().height}px`
       contents.style.position = 'fixed'
+      contents.style.zIndex = '10000'
       contents.style.top = `${offset}px`
     } else {
       contents.style.position = null
       contents.style.top = null
+      container.style.height = null
     }
   }
 
   render() {
-    const { children } = this.props
+    const { children, className } = this.props
 
     // This is to avoid margin collapsing that would affect position calculation
     // https://www.w3.org/TR/CSS2/box.html#collapsing-margins
@@ -60,7 +64,7 @@ export class PositionFixer extends Component {
     }
 
     return (
-      <div>
+      <div ref='container' className={className}>
         <div ref='reference' style={referenceStyle} />
         <div ref='contents'>
           {children}

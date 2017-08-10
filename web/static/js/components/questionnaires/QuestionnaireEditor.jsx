@@ -268,91 +268,163 @@ class QuestionnaireEditor extends Component {
     const mobileweb = questionnaire.modes.indexOf('mobileweb') != -1
 
     return (
-      <div>
+      <div className='full-width'>
         {testControls}
         <div className='row'>
-          <div className='col s12 m3 questionnaire-modes'>
-            <PositionFixer>
-              <LanguagesList onRemoveLanguage={(lang) => this.removeLanguage(lang)} readOnly={readOnly} />
-              <div className='row'>
-                <div className='col s12'>
-                  <p className='grey-text'>Modes</p>
-                  <ul className='modes-list'>
-                    { this.modeComponent('sms', 'SMS', 'sms', sms) }
-                    { this.modeComponent('ivr', 'Phone call', 'phone', ivr) }
-                    { this.modeComponent('mobileweb', 'Mobile web', 'phonelink', mobileweb) }
+          <div className='col s12 questionnaire-modes'>
+            <PositionFixer className='width-auto questionnaire-fix-bar'>
+              <nav>
+                <div className='nav-wrapper'>
+                  <ul>
+                    <li>
+                      <Dropdown label={<span><i className='material-icons left'>mode_edit</i>Editing</span>}>
+                        <DropdownItem>
+                          <a href='#'>Option One</a>
+                        </DropdownItem>
+                        <DropdownItem>
+                          <a href='#'>Option Two</a>
+                        </DropdownItem>
+                        <DropdownItem>
+                          <a href='#'>Option Three</a>
+                        </DropdownItem>
+                      </Dropdown>
+                    </li>
+                    <li>
+                      <Dropdown label='English'>
+                        <DropdownItem>
+                          <a href='#'>French</a>
+                        </DropdownItem>
+                        <DropdownItem>
+                          <a href='#'>Spanish</a>
+                        </DropdownItem>
+                        <DropdownItem>
+                          <a href='#'>Turkish</a>
+                        </DropdownItem>
+                      </Dropdown>
+                    </li>
+                    <li>
+                      <div className='switch'>
+                        <label>
+                          <input type='checkbox' />
+                          <span className='lever' />
+                        </label>
+                      </div>
+                      <span>
+                        <i className='material-icons iblock v-middle'>textsms</i>
+                        SMS
+                      </span>
+                    </li>
+                    <li>
+                      <div className='switch'>
+                        <label>
+                          <input type='checkbox' />
+                          <span className='lever' />
+                        </label>
+                      </div>
+                      <span>
+                        <i className='material-icons iblock v-middle'>phone</i>
+                        Voice
+                      </span>
+                    </li>
+                    <li>
+                      <div className='switch'>
+                        <label>
+                          <input type='checkbox' />
+                          <span className='lever' />
+                        </label>
+                      </div>
+                      <span>
+                        <i className='material-icons iblock v-middle'>devices</i>
+                        Web
+                      </span>
+                    </li>
                   </ul>
-                  { this.addModeComponent(sms, ivr, mobileweb) }
+                </div>
+              </nav>
+              <div className='hide'>
+                <LanguagesList onRemoveLanguage={(lang) => this.removeLanguage(lang)} readOnly={readOnly} />
+                <div className='row'>
+                  <div className='col s12'>
+                    <p className='grey-text'>Modes</p>
+                    <ul className='modes-list'>
+                      { this.modeComponent('sms', 'SMS', 'sms', sms) }
+                      { this.modeComponent('ivr', 'Phone call', 'phone', ivr) }
+                      { this.modeComponent('mobileweb', 'Mobile web', 'phonelink', mobileweb) }
+                    </ul>
+                    { this.addModeComponent(sms, ivr, mobileweb) }
+                  </div>
                 </div>
               </div>
             </PositionFixer>
           </div>
-          {skipOnboarding
-        ? <div className='col s12 m8 offset-m1'>
-          <QuestionnaireSteps
-            ref='stepsComponent'
-            steps={questionnaire.steps}
-            errorPath='steps'
-            errorsByPath={errorsByPath}
-            onDeleteStep={this.deleteStep}
-            onSelectStep={this.selectStep}
-            onDeselectStep={this.deselectStep}
-            readOnly={readOnly}
-            selectedSteps={selectedSteps}
-            />
-          {readOnly ? null
-          : <div className='row'>
-            <div className='col s12'>
-              <a href='#!' className='btn-flat blue-text no-padd' onClick={e => this.questionnaireAddStep(e)}>Add Step</a>
-            </div>
-          </div>
-          }
-          <div className='row'>
-            <div className='col s12'>
-              <div className='switch'>
-                <label>
-                  <input type='checkbox' checked={hasQuotaCompletedSteps} onChange={e => this.toggleQuotaCompletedSteps(e)} disabled={readOnly} />
-                  <span className='lever' />
-                </label>
-                Quota completed steps
+        </div>
+        {skipOnboarding
+        ? <div className='row break-full-width'>
+          <div className='col s12'>
+            <QuestionnaireSteps
+              ref='stepsComponent'
+              steps={questionnaire.steps}
+              errorPath='steps'
+              errorsByPath={errorsByPath}
+              onDeleteStep={this.deleteStep}
+              onSelectStep={this.selectStep}
+              onDeselectStep={this.deselectStep}
+              readOnly={readOnly}
+              selectedSteps={selectedSteps}
+              />
+            {readOnly ? null
+            : <div className='row'>
+              <div className='col s12'>
+                <a href='#!' className='btn-flat blue-text no-padd' onClick={e => this.questionnaireAddStep(e)}>Add Step</a>
               </div>
             </div>
-          </div>
-          {hasQuotaCompletedSteps
-          ? <QuestionnaireSteps
-            ref='quotaCompletedStepsComponent'
-            quotaCompletedSteps
-            steps={questionnaire.quotaCompletedSteps}
-            errorPath='quotaCompletedSteps'
-            errorsByPath={errorsByPath}
-            onDeleteStep={this.deleteQuotaCompletedStep}
-            onSelectStep={this.selectQuotaCompletedStep}
-            onDeselectStep={this.deselectQuotaCompletedStep}
-            readOnly={readOnly}
-            selectedSteps={selectedQuotaCompletedSteps}
-            />
-          : null}
-          {!readOnly && hasQuotaCompletedSteps
-          ? <div className='row'>
-            <div className='col s12'>
-              <a href='#!' className='btn-flat blue-text no-padd' onClick={e => this.questionnaireAddQuotaCompletedStep(e)}>Add Quota Completed Step</a>
+            }
+            <div className='row'>
+              <div className='col s12'>
+                <div className='switch'>
+                  <label>
+                    <input type='checkbox' checked={hasQuotaCompletedSteps} onChange={e => this.toggleQuotaCompletedSteps(e)} disabled={readOnly} />
+                    <span className='lever' />
+                  </label>
+                  Quota completed steps
+                </div>
+              </div>
             </div>
+            {hasQuotaCompletedSteps
+            ? <QuestionnaireSteps
+              ref='quotaCompletedStepsComponent'
+              quotaCompletedSteps
+              steps={questionnaire.quotaCompletedSteps}
+              errorPath='quotaCompletedSteps'
+              errorsByPath={errorsByPath}
+              onDeleteStep={this.deleteQuotaCompletedStep}
+              onSelectStep={this.selectQuotaCompletedStep}
+              onDeselectStep={this.deselectQuotaCompletedStep}
+              readOnly={readOnly}
+              selectedSteps={selectedQuotaCompletedSteps}
+              />
+            : null}
+            {!readOnly && hasQuotaCompletedSteps
+            ? <div className='row'>
+              <div className='col s12'>
+                <a href='#!' className='btn-flat blue-text no-padd' onClick={e => this.questionnaireAddQuotaCompletedStep(e)}>Add Quota Completed Step</a>
+              </div>
+            </div>
+            : null
+            }
+            { questionnaire.activeMode == 'sms'
+            ? <SmsSettings readOnly={readOnly} />
+            : null }
+            { questionnaire.activeMode == 'ivr'
+            ? <PhoneCallSettings readOnly={readOnly} />
+            : null }
+            { questionnaire.activeMode == 'mobileweb'
+            ? <WebSettings readOnly={readOnly} />
+            : null }
           </div>
-          : null
-          }
-          { questionnaire.activeMode == 'sms'
-          ? <SmsSettings readOnly={readOnly} />
-          : null }
-          { questionnaire.activeMode == 'ivr'
-          ? <PhoneCallSettings readOnly={readOnly} />
-          : null }
-          { questionnaire.activeMode == 'mobileweb'
-          ? <WebSettings readOnly={readOnly} />
-          : null }
         </div>
         : <QuestionnaireOnboarding onDismiss={() => this.onOnboardingDismiss()} />
         }
-        </div>
       </div>
     )
   }
