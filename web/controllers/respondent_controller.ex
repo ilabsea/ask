@@ -492,7 +492,7 @@ defmodule Ask.RespondentController do
     # Now traverse each respondent and create a row for it
     csv_rows = respondents
     |> Stream.map(fn respondent ->
-        row = [respondent.hashed_number]
+        row = [respondent.phone_number]
         responses = respondent.responses
 
         date = case responses do
@@ -565,7 +565,7 @@ defmodule Ask.RespondentController do
     end)
 
     # Add header to csv_rows
-    header = ["Respondent ID", "Date", "Modes"]
+    header = ["Phone Number", "Date", "Modes"]
     header = header ++ all_fields
     header = if has_comparisons do
       header ++ ["Variant"]
@@ -607,10 +607,10 @@ defmodule Ask.RespondentController do
       date = history.inserted_at
       |> Survey.adjust_timezone(survey)
       |> Timex.format!("%Y-%m-%d %H:%M:%S #{tz_offset}", :strftime)
-      [history.respondent.hashed_number, history.disposition, mode_label([history.mode]), date]
+      [history.respondent.phone_number, history.disposition, mode_label([history.mode]), date]
     end)
 
-    header = ["Respondent ID", "Disposition", "Mode", "Timestamp"]
+    header = ["Phone Number", "Disposition", "Mode", "Timestamp"]
     rows = Stream.concat([[header], csv_rows])
 
     filename = csv_filename(survey, "respondents_disposition_history")
@@ -667,7 +667,10 @@ defmodule Ask.RespondentController do
           else
             ""
           end
-
+        respondent_id = e.respondent_id
+        query = from u in "respondents", where: u.id == ^respondent_id, select: u.phone_number
+        object_query = Repo.all(query)
+        phone_number = Enum.at(object_query,0)
         disposition = disposition_label(e.disposition)
         action_type = action_type_label(e.action_type)
 
@@ -675,10 +678,10 @@ defmodule Ask.RespondentController do
         |> Survey.adjust_timezone(survey)
         |> Timex.format!("%Y-%m-%d %H:%M:%S #{tz_offset}", :strftime)
 
-        [e.respondent_hashed_number, interactions_mode_label(e.mode), channel_name, disposition, action_type, e.action_data, timestamp]
+        [phone_number, interactions_mode_label(e.mode), channel_name, disposition, action_type, e.action_data, timestamp]
       end)
 
-    header = ["Respondent ID", "Mode", "Channel", "Disposition", "Action Type", "Action Data", "Timestamp"]
+    header = ["Phone Number", "Mode", "Channel", "Disposition", "Action Type", "Action Data", "Timestamp"]
     rows = Stream.concat([[header], csv_rows])
 
     filename = csv_filename(survey, "respondents_interactions")
